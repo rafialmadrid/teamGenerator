@@ -157,7 +157,7 @@ function addIntern(){
 
         fs.writeFile('./output/team.html', html, (err) => {
           if (err) throw err;
-          console.log('It\'s saved!');
+          console.log('The HTML was succesfully created in output');
         });
 
       } 
