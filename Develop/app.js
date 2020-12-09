@@ -10,26 +10,157 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+var employeesArray = [];
+
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+function init() {
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
+    inquirer 
+  .prompt([
+    
+    {
+      type: 'input',
+      message: 'What is your managers name?',
+      name: 'managerName',
+    },
+    {
+      type: 'input',
+      message: 'What is your managers id?',
+      name: 'managerID',
+    },
+    {
+      type: 'input',
+      message: 'What is your managers email?',
+      name: 'managerEmail',
+    },
+    {
+      type: 'input',
+      message: 'What is your managers office number?',
+      name: 'managerOffice',
+    }
+])
+  .then((response) => {
 
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
+    const newManager = new Manager(response.managerName, response.managerID, response.managerEmail, response.managerOffice);
 
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+    employeesArray.push(newManager);
+
+    askTypeMember();
+ 
+});
+
+
+}
+
+init();
+
+function addEngineer(){ 
+inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: 'What is your engineers name?',
+                        name: 'engineerName',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your engineers id?',
+                        name: 'engineerID',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your engineers email?',
+                        name: 'engineerEmail',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your engineers gitHub username?',
+                        name: 'engineerGit',
+                      },
+                      {
+                        type: 'list',
+                        message: 'Which type of team member would you like to add?',
+                        name: 'typeMember',
+                        choices: ["Engineer", "Intern", "I dont want to add any more team members"]
+                      }
+                ]).then((response) => {
+                    const newEngineer = new Engineer(response.engineerName, response.engineerID, response.engineerEmail, response.engineerGit);
+                    employeesArray.push(newEngineer);
+                    askTypeMember();
+                });
+            }
+
+function addIntern(){
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: 'What is your interns name?',
+                        name: 'internName',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your interns id?',
+                        name: 'internID',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your interns email?',
+                        name: 'internEmail',
+                      },
+                      {
+                        type: 'input',
+                        message: 'What is your interns school?',
+                        name: 'internSchool',
+                      },
+                      {
+                        type: 'list',
+                        message: 'Which type of team member would you like to add?',
+                        name: 'typeMember',
+                        choices: ["Engineer", "Intern", "I dont want to add any more team members"]
+                      }
+                ]).then((response) => {
+                    const newIntern = new Intern(response.internName, response.internID, response.internEmail, response.internSchool);
+                    employeesArray.push(newIntern);
+                    askTypeMember();
+                });
+              }
+
+  function askTypeMember(){
+    inquirer 
+    .prompt([
+        {
+            type: 'list',
+            message: 'Which type of team member would you like to add?',
+            name: 'typeMember',
+            choices: ["Engineer", "Intern", "I dont want to add any more team members"]
+          }
+    ])
+    .then((response) => {
+
+      if (response.typeMember==="Engineer") {
+
+        addEngineer();
+        
+      }
+      else if(response.typeMember==="Intern"){
+
+        addIntern();
+
+      }   
+      else{
+
+        var html = render(employeesArray);
+
+        fs.writeFile('./output/team.html', html, (err) => {
+          if (err) throw err;
+          console.log('It\'s saved!');
+        });
+
+      } 
+
+    });
+  }
